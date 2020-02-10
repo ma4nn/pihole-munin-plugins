@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Sample setup for '/etc/munin/plugin-conf.d/munin-node':
+#
+# [pihole_*]
+# user root
+# env.host 127.0.0.1
+# env.port 80
+# env.api /admin/api.php
+# env.pw secret
+
+envhost=${host:-127.0.0.1}
+envport=${port:-80}
+envapi=${api:-/admin/api.php}
+envpw=${pw:-}
+
+apicall=$(curl --form "pw=$envpw" -s "$envhost:$envport$envapi?getQueryTypes" 2>/dev/null)
+stats=$(echo $apicall | sed -E 's/\{"querytypes":\{([^{}]+)\}\}/\1/; s/ \([^\)]+\)//g; s/"//g' | tr ',' "\n")
+
+case $1 in
+  config)
+    echo "graph_title Pihole Query Types"
+    echo "graph_vlabel query percentage"
+    echo "graph_category pihole"
+    echo "graph_info This graph shows the Pihole queries statistics by type."
+
+    for stat in $stats
+    do
+        uid=$(echo $stat | sed 's/:.*//')
+        echo "$uid.label $(echo $uid | sed 's/_today//')"
+        echo "$uid.type GAUGE"
+        echo "$uid.min 0"
+    done
+
+  exit 0;;
+esac
+
+for stat in $stats
+do
+    uid=$(echo $stat | sed 's/:.*//')
+    value=$(echo $stat | sed 's/.*://')
+    echo "$uid.value $value"
+done
