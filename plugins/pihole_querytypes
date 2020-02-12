@@ -23,12 +23,14 @@ case $1 in
     echo "graph_vlabel query percentage"
     echo "graph_category pihole"
     echo "graph_info This graph shows the Pihole queries statistics by type."
+    echo "graph_args --lower-limit 0 --upper-limit 100 --rigid"
 
     for stat in $stats
     do
         uid=$(echo $stat | sed 's/:.*//')
         echo "$uid.label $(echo $uid | sed 's/_today//')"
         echo "$uid.type GAUGE"
+        echo "$uid.draw AREASTACK"
         echo "$uid.min 0"
     done
 
