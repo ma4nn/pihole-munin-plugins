@@ -1,5 +1,5 @@
 # MuninPiholePlugins
-Munin plugins for monitoring Pi-hole (tested with Pi-hole v4.3 - https://pi-hole.net)
+Munin plugins for monitoring Pi-hole (tested with [Pi-hole](https://pi-hole.net) v5.17)
 
 ## Plugins
 * `pihole_queries` show the queries rates (total dns queries and blocked queries/ads rates). The daily graph from this plugin should have a curve pace very similar to the one from the Pi-hole web interface.
@@ -21,6 +21,13 @@ env.api /admin/api.php
 env.pw secret
 ```
 The password `env.pw` is only needed for `pihole_querytypes` and is the password of the Pi-hole web interface.
+
+In case that your Pihole is password protected, [Pi-hole Web v5.18](https://pi-hole.net/blog/2022/12/21/pi-hole-ftl-v5-20-and-web-v5-18-released/#page-content)  
+introduced more security for their API endpoints and these are now secured by an API token.  
+Therewith the config url needs to be changed to
+```
+env.api /admin/api.php?summaryRaw&auth=<API_TOKEN>
+```
 
 ## Samples
 
